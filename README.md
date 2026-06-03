@@ -1,0 +1,194 @@
+# Stage EV Europe - Accu Conditioning
+
+Projectrepository voor EV-accu conditioning en monitoring systemen. Bevat vier interconnected projecten voor temperatuurmeting, gateway-communicatie en thermisch beheer.
+
+## 📋 Projectoverzicht
+
+| Project | Type | Beschrijving |
+|---------|------|-------------|
+| **[AccuTester GUI](accutest-gui/)** | Python/PySide6 | Desktop app voor realtime temperatuurmeting en monitoring |
+| **[Arduino Tempmeter](arduino/)** | Arduino/C++ | Firmware voor 4× DS18B20 temperatuursensoren |
+| **[BTMS - BMS Gateway GUI](btms-bms-gateway-gui/)** | Python/Tkinter | GUI voor BMS en thermisch management systeem |
+| **[STM32 CAN Gateway](stm32-can-gateway/)** | STM32/C | CAN-bus gateway met NMEA2000 interface |
+
+## 🏗️ Architectuur
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    AccuTester GUI                        │
+│              (Monitoring & Grafiekgeneratie)              │
+└──────────────────┬──────────────────────────────────────┘
+                   │ Serieel (115200 baud)
+┌──────────────────▼──────────────────────────────────────┐
+│                 Arduino Tempmeter V2                      │
+│         (4× DS18B20 temperatuursensoren)                 │
+└──────────────────────────────────────────────────────────┘
+                   
+┌──────────────────────────────────────────────────────────┐
+│           BTMS - BMS Gateway GUI                         │
+│         (Thermisch beheer & CAN control)                 │
+└──────────────────┬──────────────────────────────────────┘
+                   │ CAN-bus
+┌──────────────────▼──────────────────────────────────────┐
+│             STM32 CAN Gateway                            │
+│    (EMUS BMS ↔ NMEA2000 converter)                       │
+└──────────────────────────────────────────────────────────┘
+```
+
+## 🚀 Quick Start
+
+### 1. AccuTester (Monitoring)
+```bash
+cd accutest-gui
+python -m venv venv
+source venv/bin/activate  # of venv\Scripts\Activate.ps1 op Windows
+pip install -r requirements.txt
+python run.py
+```
+
+### 2. Arduino Setup
+```bash
+# Upload Tempmeter_arduinoV2.ino naar Arduino via Arduino IDE
+# Sensors: Sluit 4× DS18B20 aan op Pin 2 (One-Wire bus)
+```
+
+### 3. BTMS GUI
+```bash
+cd btms-bms-gateway-gui
+pip install -r requirements.txt
+python GUI_BMS_en_BTMS_met_settemp.py
+```
+
+### 4. STM32 CAN Gateway
+```bash
+# Open STM32CubeIDE
+# Import: STM32CubeIDE NMEA2000 battery example/
+# Build & flash naar STM32F105 board
+```
+
+## 📁 Folder Structuur
+
+```
+stage-ev-europe-accuconditionering/
+│
+├── accutest-gui/                      # Desktop monitoring app
+│   ├── src/
+│   ├── assets/
+│   ├── data/
+│   ├── tests/
+│   ├── requirements.txt
+│   ├── README.md
+│   └── run.py
+│
+├── arduino/                           # Arduino firmware
+│   ├── Tempmeter_arduinoV2.ino
+│   ├── README.md
+│   └── ...
+│
+├── btms-bms-gateway-gui/              # BMS/BTMS control
+│   ├── GUI_BMS_en_BTMS_met_settemp.py
+│   ├── requirements.txt
+│   ├── README.md
+│   └── ...
+│
+├── stm32-can-gateway/                 # CAN gateway hardware
+│   ├── STM32CubeIDE NMEA2000 battery example/
+│   ├── images/
+│   ├── LICENSE
+│   ├── README.md
+│   └── ...
+│
+├── README.md                          # Dit bestand
+├── .gitignore                         # Git ignore regels
+└── LICENSE
+```
+
+## 📝 Detaildocumentatie
+
+- **[AccuTester README](accutest-gui/README.md)** - GUI installatie & gebruik
+- **[Arduino README](arduino/README.md)** - Firmware & sensor setup
+- **[BTMS README](btms-bms-gateway-gui/README.md)** - BMS GUI & protocol
+- **[STM32 README](stm32-can-gateway/README.md)** - CAN gateway specs
+
+## 🔧 Technische Specs
+
+### Temperatuurmeting (AccuTester + Arduino)
+- **Sensoren**: 4× Dallas DS18B20 (One-Wire)
+- **Bereik**: -55°C tot +125°C
+- **Resolutie**: 0.0625°C (12-bit)
+- **Sample Rate**: 5 Hz
+- **Communication**: Serial 115200 baud
+
+### BMS/BTMS Gateway
+- **Protocol**: CAN-bus (250 kbps NMEA2000)
+- **Settemp Range**: 1-50°C
+- **Baud**: 115200
+
+### STM32 CAN Gateway
+- **MCU**: STM32F105RCT6 (72MHz)
+- **CAN1**: EMUS BMS (micro-fit connector)
+- **CAN2**: NMEA2000 (M12 connector)
+- **Supply**: 4-32V
+- **Isolation**: Optional per CAN-bus
+
+## 🛠️ Development
+
+### Environment Setup
+```bash
+# Python projects - create virtual environment
+python -m venv venv
+
+# Install all dependencies
+pip install -r requirements.txt
+```
+
+### Code Standards
+- Python: PEP 8 (Black formatter)
+- Arduino: Arduino style guide
+- STM32: STM32CubeIDE defaults
+
+## 🐛 Troubleshooting
+
+### AccuTester
+- **Arduino niet gevonden?** → Check COM-poort in device manager
+- **Import error?** → `pip install -r requirements.txt` opnieuw doen
+- **Plot niet updating?** → Check baud rate (115200)
+
+### Arduino
+- **Sensoren niet gedetecteerd?** → Verify One-Wire addresses in sketch
+- **Serial output garbage?** → Check baud rate 115200
+
+### BTMS GUI
+- **tksvg error?** → `pip install tksvg --upgrade`
+
+### STM32
+- **CAN bus inactief?** → Check termination resistors
+- **USB upload fails?** → Check STM32CubeIDE version 1.10.1+
+
+## 📚 Resources
+
+- [Dallas DS18B20 Datasheet](https://datasheets.maximintegrated.com/en/ds/DS18B20.pdf)
+- [STM32F105 Reference Manual](https://www.st.com/resource/en/reference_manual/cd00211017.pdf)
+- [NMEA 2000 Specification](https://www.nmea.org/)
+- [Arduino Serial Communication](https://www.arduino.cc/en/Reference/Serial)
+
+## 👥 Team
+
+- **Stage**: EV Europe - Accu Conditioning Project
+- **Schooljaar**: 2026
+
+## 📄 Licentie
+
+Zie [LICENSE](LICENSE) file
+
+## 🤝 Bijdragen
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/improvement`)
+3. Commit changes (`git commit -am 'Add improvement'`)
+4. Push naar branch (`git push origin feature/improvement`)
+5. Open Pull Request
+
+---
+
+**Laatst bijgewerkt**: June 2026
